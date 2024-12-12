@@ -6,6 +6,8 @@
 package providers
 
 import (
+	"log"
+
 	"github.com/zclconf/go-cty/cty"
 
 	"github.com/opentofu/opentofu/internal/configs/configschema"
@@ -501,4 +503,111 @@ type CallFunctionArgumentError struct {
 
 func (err *CallFunctionArgumentError) Error() string {
 	return err.Text
+}
+
+// ProviderWrapper 包装了真实的provider并添加日志功能
+type ProviderWrapper struct {
+	underlying Interface
+}
+
+// NewProviderWrapper 创建一个新的provider包装器
+func NewProviderWrapper(p Interface) Interface {
+	return &ProviderWrapper{
+		underlying: p,
+	}
+}
+
+// logCall 记录方法调用信息
+func (w *ProviderWrapper) logCall(method string, args ...interface{}) {
+	log.Printf("[TRACE] Provider调用: %s, 参数: %v", method, args)
+}
+
+// GetProviderSchema 实现
+func (w *ProviderWrapper) GetProviderSchema() GetProviderSchemaResponse {
+	w.logCall("GetProviderSchema")
+	return w.underlying.GetProviderSchema()
+}
+
+// ValidateProviderConfig 实现
+func (w *ProviderWrapper) ValidateProviderConfig(req ValidateProviderConfigRequest) ValidateProviderConfigResponse {
+	w.logCall("ValidateProviderConfig", req)
+	return w.underlying.ValidateProviderConfig(req)
+}
+
+// ConfigureProvider 实现
+func (w *ProviderWrapper) ConfigureProvider(req ConfigureProviderRequest) ConfigureProviderResponse {
+	w.logCall("ConfigureProvider", req)
+	return w.underlying.ConfigureProvider(req)
+}
+
+// ReadResource 实现
+func (w *ProviderWrapper) ReadResource(req ReadResourceRequest) ReadResourceResponse {
+	w.logCall("ReadResource", req)
+	return w.underlying.ReadResource(req)
+}
+
+// PlanResourceChange 实现
+func (w *ProviderWrapper) PlanResourceChange(req PlanResourceChangeRequest) PlanResourceChangeResponse {
+	w.logCall("PlanResourceChange", req)
+	return w.underlying.PlanResourceChange(req)
+}
+
+// ApplyResourceChange 实现
+func (w *ProviderWrapper) ApplyResourceChange(req ApplyResourceChangeRequest) ApplyResourceChangeResponse {
+	w.logCall("ApplyResourceChange", req)
+	return w.underlying.ApplyResourceChange(req)
+}
+
+// ImportResourceState 实现
+func (w *ProviderWrapper) ImportResourceState(req ImportResourceStateRequest) ImportResourceStateResponse {
+	w.logCall("ImportResourceState", req)
+	return w.underlying.ImportResourceState(req)
+}
+
+// ReadDataSource 实现
+func (w *ProviderWrapper) ReadDataSource(req ReadDataSourceRequest) ReadDataSourceResponse {
+	w.logCall("ReadDataSource", req)
+	return w.underlying.ReadDataSource(req)
+}
+
+// ValidateResourceConfig 实现
+func (w *ProviderWrapper) ValidateResourceConfig(req ValidateResourceConfigRequest) ValidateResourceConfigResponse {
+	w.logCall("ValidateResourceConfig", req)
+	return w.underlying.ValidateResourceConfig(req)
+}
+
+// ValidateDataResourceConfig 实现
+func (w *ProviderWrapper) ValidateDataResourceConfig(req ValidateDataResourceConfigRequest) ValidateDataResourceConfigResponse {
+	w.logCall("ValidateDataResourceConfig", req)
+	return w.underlying.ValidateDataResourceConfig(req)
+}
+
+// UpgradeResourceState 实现
+func (w *ProviderWrapper) UpgradeResourceState(req UpgradeResourceStateRequest) UpgradeResourceStateResponse {
+	w.logCall("UpgradeResourceState", req)
+	return w.underlying.UpgradeResourceState(req)
+}
+
+// GetFunctions 实现
+func (w *ProviderWrapper) GetFunctions() GetFunctionsResponse {
+	w.logCall("GetFunctions")
+	return w.underlying.GetFunctions()
+}
+
+// CallFunction 实现
+func (w *ProviderWrapper) CallFunction(req CallFunctionRequest) CallFunctionResponse {
+	w.logCall("CallFunction", req)
+	return w.underlying.CallFunction(req)
+}
+
+// Stop 实现
+func (w *ProviderWrapper) Stop() error {
+	w.logCall("Stop")
+	return w.underlying.Stop()
+}
+
+// Close 实现
+func (w *ProviderWrapper) Close() error {
+	w.logCall("Close")
+	return w.underlying.Close()
 }
